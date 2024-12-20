@@ -1,0 +1,100 @@
+axe d'amélioration
+
+ajouté mapstructs/modelmapper pour simplifier les mapping entre les dto et les entitées
+
+ajouté lombok pour la simplification et une meilleure lisibilité du code 
+
+séparé les updates au niveau de l'interface car dans notre cas le back s'adapte au front alors que ça doit être le contraire (les régles de haut niveau ne doivent pas être dépendant des régles de bas niveau)
+
+ça dépendra des évolutions futures et du besoin mais on peut songer à séparé la technique du métier en optant pour architecture plus propre (modulaire ou hexagonale)
+
+
+utilisé ResponseEntity pour rajouté plus d'information a la réponse ou utilisé webflux si on a besoin de plus de performance avec Flux et Mono
+
+Eager a changé en Lazy
+
+faudra faire attention et surveiller getFilteredEvents dans le cas ou la base de donnée devient énorme car on récupére tout en eager, faudra pas tout récupérer puis filtrer mais plutot une requeête bien claire
+
+on a filtrer dans le service puis mapper dans le mapper
+
+ajouter un logger et logger les étapes et les informations importantes
+
+
+
+### Axes d'amélioration
+
+1. **Simplification des mappings** :
+   - Utiliser **MapStruct** ou **ModelMapper** pour automatiser et simplifier les conversions entre DTOs et entités.
+
+2. **Amélioration de la lisibilité** :
+   - Ajouter **Lombok** pour réduire le code boilerplate (getters, setters, constructeurs, etc.).
+
+3. **Séparation des responsabilités** :
+   - Séparer les différentes méthodes d'update au niveau des interfaces pour que le backend ne s'adapte pas systématiquement au frontend, conformément au principe d'inversion des dépendances (les règles de haut niveau ne doivent pas dépendre de celles de bas niveau).
+
+4. **Évolution de l'architecture** :
+   - En fonction des besoins futurs, envisager une séparation claire entre logique technique et métier en adoptant une architecture plus propre (ex. : **architecture hexagonale** ou **modulaire**).
+
+5. **Enrichissement des réponses** :
+   - Utiliser **ResponseEntity** pour inclure des métadonnées supplémentaires dans les réponses HTTP.
+   - En cas de besoin de haute performance, considérer **WebFlux** avec **Flux** et **Mono** pour les flux réactifs.
+
+6. **Optimisation des relations JPA** :
+   - Remplacer les relations **Eager** par **Lazy** pour éviter de charger inutilement des données non nécessaires.
+
+7. **Optimisation des requêtes** :
+   - Faire attention à la méthode `getFilteredEvents` : en cas de base de données volumineuse, éviter de tout récupérer en mémoire pour ensuite filtrer. Utiliser une requête SQL bien optimisée pour effectuer le filtrage directement.
+
+8. **Gestion des responsabilités** :
+   - Effectuer le filtrage des données dans le service et le mapping dans le mapper pour une meilleure séparation des responsabilités.
+
+9. **Ajout de logs** :
+   - Intégrer un système de logging pour enregistrer les étapes importantes et fournir une meilleure traçabilité des traitements.
+
+### Résumé général
+Ces améliorations visent à rendre le code plus lisible, performant et adaptable aux évolutions tout en respectant les principes de séparation des responsabilités et en optimisant l’utilisation des ressources.
+
+
+
+# Improvement Areas
+
+## 1. Simplify Mappings
+- Use **MapStruct** or **ModelMapper** to automate and simplify conversions between DTOs and entities.
+
+## 2. Improve Readability
+- Add **Lombok** to reduce boilerplate code like getters, setters, and constructors, improving code clarity.
+
+## 3. Separate Responsibilities
+- Split update methods at the interface level to ensure the backend doesn't overly adapt to the frontend.
+- Follow the **Dependency Inversion Principle**: high-level rules should not depend on low-level implementation details.
+
+## 4. Architectural Evolution
+- Consider adopting **hexagonal** or **modular** architecture to separate technical and business logic.
+- This will prepare the system for future scalability and maintainability.
+
+## 5. Enhance HTTP Responses
+- Use **ResponseEntity** to include additional metadata in HTTP responses.
+- For performance-sensitive use cases, implement **WebFlux** with **Flux** and **Mono** for reactive, non-blocking programming.
+
+## 6. Optimize JPA Relations
+- Change JPA relationships from **Eager** loading to **Lazy** loading to prevent unnecessary data fetching.
+
+## 7. Optimize Queries
+- Monitor the `getFilteredEvents` method for performance issues in large databases.
+- Avoid loading all data into memory and filtering; instead, use efficient SQL queries with clear conditions.
+
+## 8. Manage Responsibilities Effectively
+- Handle data filtering in the service layer.
+- Perform data mapping in the mapper layer to maintain separation of concerns.
+
+## 9. Add Logging
+- Introduce a logging system to track key operations and critical steps.
+- This will improve debugging and traceability.
+
+---
+
+## Summary
+These improvements aim to:
+- Enhance readability and maintainability.
+- Optimize performance for large datasets.
+- Better prepare the application for future growth while adhering to clean coding practices.

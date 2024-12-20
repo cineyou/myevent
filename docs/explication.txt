@@ -1,0 +1,103 @@
+configuration de spring pour la prise en charge de la bdd qui s'execute en mémoire, l'initiation se fera avec les deux scripts (création et initiation)
+
+1-Adding review does not work
+
+La méthode dans le controlleur qui permet de mettre à jour un event est vide, aucun traiement n'est lancé lorsque 
+
+au niveau du service js $http.put('/api/events/' + event.id, event) l'appel est bon par contre au niveau du controlleur aucun traitement n'est fait lors de la réception de la requête
+
+dans service pareil, il n'y a pas de service qui permet de mettre à jour un event
+
+le fait d'ajouter le service pour update tout l'event une erreur est généré car dans event il y a une dépendance vers bands.
+
+Ajouter un avis n'a aucune relation avec l'entité bands, je propose de séparé les responsabilités et de ne pas envoyé directement l'entité comme réponse, on ajoute une couche DTO qui seront sérialisé et envoyé dans le réseau
+
+on utilisera les records pour privilégié l'immutabilité
+
+lorsque on donne un avis ou on ajoute un commentaire toute la table event est mise a jour alors qu'on a modifié qu'une valeur au niveau front
+
+on va conditionné la mise a jour que sur les champs modifié réellement car faire un update sur un champs est beaucoup plus performant que de le faire sur toute la table
+
+si on fait systématiquement l'update des avis et des commentaires a chaque fois que l'un des deux est modifié, il y aura deux requêtes générées a chaque fois (deux update)
+
+on va créer deux méthode qui vont permettre de séparé les updates et les conditionnées
+
+
+2. Using the delete button works but elements comes back when i refresh the page
+
+@Transactional(readonly=true) est sur le repository, ce n'est pas de la responsabilité du repos de gérer ça, il est recommandé de le faire dans le service 
+
+on a ajouté l'annotation dans le service au niveau de la methode delete
+
+on a ajouté le dto pour getevents pour être conforme avec la bonne pratique
+
+
+
+
+### Résumé en points :  
+
+#### 1. **Ajout d'un avis ne fonctionne pas**  
+   - **Problème détecté** :  
+     - La méthode du contrôleur pour mettre à jour un événement est vide et ne traite pas la requête.  
+     - Le service n’a pas d’implémentation pour permettre la mise à jour d’un événement.  
+   - **Conflits avec la relation entre entités** :  
+     - Une erreur est générée lors de la tentative d’ajout ou de mise à jour à cause de la dépendance entre `Event` et `Bands`.  
+   - **Proposition de solution** :  
+     - Séparer les responsabilités pour éviter l'impact des relations.  
+     - Ne pas envoyer directement les entités (`Event`, `Bands`) comme réponse JSON. Utiliser des **DTOs (Data Transfer Objects)** pour sérialiser les données.  
+     - Utiliser des **records** pour garantir l’immutabilité des DTOs.  
+   - **Optimisation des mises à jour** :  
+     - La mise à jour de l’entité entière lors de l’ajout d’un commentaire ou d’un avis est inefficace.  
+     - Conditionner la mise à jour pour ne modifier que les champs réellement modifiés.  
+   - **Gestion des mises à jour indépendantes** :  
+     - Créer deux méthodes distinctes pour gérer séparément les mises à jour des avis et des commentaires, évitant ainsi les mises à jour redondantes.  
+
+#### 2. **Le bouton "supprimer" fonctionne mais les éléments reviennent après actualisation**  
+   - **Problème détecté** :  
+     - L’annotation `@Transactional(readOnly=true)` est appliquée au niveau du repository, ce qui empêche correctement la suppression.  
+   - **Proposition de solution** :  
+     - Déplacer la gestion des transactions dans le service, et ajouter l’annotation `@Transactional` avec les droits d’écriture dans la méthode `delete`.  
+   - **Amélioration de la structure** :  
+     - Introduction d’un DTO pour la méthode `getEvents`, respectant ainsi les bonnes pratiques de séparation des couches et de manipulation des données.  
+
+### Résumé des améliorations principales :  
+- Séparation des responsabilités entre entités et DTOs.  
+- Optimisation des mises à jour avec des méthodes conditionnelles et ciblées.  
+- Respect des bonnes pratiques avec la gestion des transactions dans le service.  
+- Utilisation des **records** pour garantir des structures de données immuables.  
+- Ajout d’un DTO spécifique pour les événements retournés par `getEvents`.  
+
+
+### Summary:  
+
+#### 1. **Adding a review does not work**  
+   - **Identified issues**:  
+     - The controller method for updating an event is empty and does not handle the incoming request.  
+     - The service does not have any implementation to update an event.  
+   - **Entity relationship conflicts**:  
+     - An error occurs during the update due to the dependency between the `Event` and `Bands` entities.  
+   - **Proposed solutions**:  
+     - **Separate responsibilities** to avoid coupling issues caused by relationships.  
+     - Do not send entities (`Event`, `Bands`) directly in JSON responses. Instead, use **DTOs (Data Transfer Objects)** for serialization.  
+     - Use **records** to ensure immutability for the DTOs.  
+   - **Update optimization**:  
+     - Avoid updating the entire entity when only a review or comment is modified.  
+     - Perform conditional updates to modify only the fields that have actually changed.  
+   - **Independent update management**:  
+     - Create two separate methods to handle reviews and comments updates independently, reducing redundant database updates.  
+
+#### 2. **Using the delete button works but items reappear after refreshing the page**  
+   - **Identified issue**:  
+     - The `@Transactional(readOnly=true)` annotation is applied at the repository level, preventing proper deletion.  
+   - **Proposed solution**:  
+     - Move transaction management to the service layer and apply the `@Transactional` annotation with write permissions to the `delete` method.  
+   - **Structural improvement**:  
+     - Introduce a DTO for the `getEvents` method to adhere to best practices of separation of concerns and data handling.  
+
+### Key improvements:  
+- Separate responsibilities between entities and DTOs.  
+- Optimize updates with conditional and targeted methods.  
+- Manage transactions in the service layer instead of the repository.  
+- Use **records** for immutable data structures.  
+- Introduce a dedicated DTO for events returned by the `getEvents` method.  
+

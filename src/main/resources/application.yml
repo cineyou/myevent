@@ -1,5 +1,14 @@
-spring.jpa:
-  hibernate.ddl-auto: ""
 spring:
+  sql:
+    init:
+      mode: always
   jpa:
+    hibernate:
+      ddl-auto: none
     show-sql: true
+
+  datasource:
+    url: jdbc:hsqldb:mem:myevnetdb
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: sa
+    password:
